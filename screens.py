@@ -63,7 +63,7 @@ class Game(Screen):
         self.key_count = 0
         self.lives = self.max_lives
         self.score = 0
-        self.total_seconds = 0
+        self.timer.start()
         self.load_level(0)
 
     def load_level(self, level):
@@ -71,10 +71,11 @@ class Game(Screen):
         self.map = self.maps[level]
         self.map.pressed = False
         self.player = Player(self.map.spawn_x, self.map.spawn_y)
-        self.timer.start()
+        self.level_start = self.timer.seconds
+        self.timer.resume()
 
     def level_points(self):
-        return max(0, 1000 - 10 * self.timer.seconds)
+        return max(0, 1000 - 10 * (self.timer.seconds - self.level_start))
 
     def update(self):
         self.player.moving = False
@@ -230,7 +231,6 @@ class LevelComplete(Screen):
 
             if self.choice == 0:
                 game.score += self.points
-                game.total_seconds += self.seconds
                 game.load_level(game.level + 1)
                 self.world.screen = game
             elif self.choice == 1:
@@ -308,7 +308,7 @@ class Win(Screen):
 
     def start(self):
         game = self.world.game
-        self.seconds = game.total_seconds + game.timer.seconds
+        self.seconds = game.timer.seconds
         self.score = game.score + game.level_points()
 
     def update(self):
