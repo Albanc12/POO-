@@ -16,17 +16,6 @@ class Player:
         self.climbing = False
         self.direction = "down"
         self.moving = False
-        self.hitbox_offset_x = 2
-        self.hitbox_width = 12
-        self.visual_height = 20
-        self.head_height = 8
-        self.jump_speed = 9
-
-    def hitbox_left(self):
-        return self.x + self.hitbox_offset_x
-
-    def hitbox_right(self):
-        return self.x + self.hitbox_offset_x + self.hitbox_width - 1
 
     def draw(self):
         frames = self.FRAMES[self.direction]

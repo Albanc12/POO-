@@ -8,12 +8,6 @@ class Timer:
         self.frames = 0
         self.running = True
 
-    def pause(self):
-        self.running = False
-
-    def resume(self):
-        self.running = True
-
     def stop(self):
         self.running = False
 

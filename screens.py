@@ -96,8 +96,8 @@ class Game(Screen):
 
         self.timer.update()
 
-        center_x = (self.player.hitbox_left() + self.player.hitbox_right()) // 2
-        y_middle = self.player.y + self.player.visual_height // 2
+        center_x = self.player.x + 7
+        y_middle = self.player.y + 10
         on_ladder = self.map.is_ladder(center_x, y_middle)
 
         if not on_ladder:
@@ -107,8 +107,8 @@ class Game(Screen):
             self.player.x = center_x // 16 * 16
 
         if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_D):
-            col = (self.player.hitbox_right() + 2) // 16
-            y_bottom = self.player.y + self.player.visual_height - 1
+            col = (self.player.x + 15) // 16
+            y_bottom = self.player.y + 19
 
             if self.map.is_free(col, col, self.player.y, y_bottom):
                 self.player.x += 2
@@ -117,8 +117,8 @@ class Game(Screen):
                 self.player.climbing = False
 
         elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.KEY_Q):
-            col = (self.player.hitbox_left() - 2) // 16
-            y_bottom = self.player.y + self.player.visual_height - 1
+            col = self.player.x // 16
+            y_bottom = self.player.y + 19
 
             if self.map.is_free(col, col, self.player.y, y_bottom):
                 self.player.x -= 2
@@ -127,9 +127,9 @@ class Game(Screen):
                 self.player.climbing = False
 
         elif self.player.climbing and (pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.KEY_Z)):
-            check_y = self.player.y - 2 - self.player.head_height
-            col_left = self.player.hitbox_left() // 16
-            col_right = self.player.hitbox_right() // 16
+            check_y = self.player.y - 10
+            col_left = (self.player.x + 2) // 16
+            col_right = (self.player.x + 13) // 16
 
             if self.map.is_ladder(center_x, y_middle - 2) and self.map.is_free(col_left, col_right, check_y, check_y):
                 self.player.y -= 2
@@ -137,9 +137,9 @@ class Game(Screen):
                 self.player.moving = True
 
         elif self.player.climbing and (pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.KEY_S)):
-            feet_y = self.player.y + 2 + self.player.visual_height
-            col_left = self.player.hitbox_left() // 16
-            col_right = self.player.hitbox_right() // 16
+            feet_y = self.player.y + 22
+            col_left = (self.player.x + 2) // 16
+            col_right = (self.player.x + 13) // 16
 
             if self.map.has_ground(col_left, col_right, feet_y):
                 self.player.climbing = False
@@ -148,32 +148,32 @@ class Game(Screen):
                 self.player.direction = "up"
                 self.player.moving = True
 
-        col_left = self.player.hitbox_left() // 16
-        col_right = self.player.hitbox_right() // 16
+        col_left = (self.player.x + 2) // 16
+        col_right = (self.player.x + 13) // 16
 
         if self.player.climbing:
             self.player.vy = 0
 
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.player.climbing = False
-                self.player.vy = -self.player.jump_speed
+                self.player.vy = -9
         else:
             self.player.vy = min(self.player.vy + 1, 8)
 
-            feet_y = self.player.y + 1 + self.player.visual_height
+            feet_y = self.player.y + 21
             on_ground = self.map.has_ground(col_left, col_right, feet_y)
 
             if pyxel.btnp(pyxel.KEY_SPACE) and on_ground:
-                self.player.vy = -self.player.jump_speed
+                self.player.vy = -9
 
         step = 1 if self.player.vy > 0 else -1
 
         for _ in range(abs(self.player.vy)):
             if step == 1:
-                feet_y = self.player.y + 1 + self.player.visual_height
+                feet_y = self.player.y + 21
                 blocked = self.map.has_ground(col_left, col_right, feet_y)
             else:
-                check_y = self.player.y - self.player.head_height - 1
+                check_y = self.player.y - 9
                 blocked = not self.map.is_free(col_left, col_right, check_y, check_y)
 
             if blocked:
@@ -182,8 +182,8 @@ class Game(Screen):
 
             self.player.y += step
 
-        center_x = (self.player.hitbox_left() + self.player.hitbox_right()) // 2
-        feet_y = self.player.y + 1 + self.player.visual_height
+        center_x = self.player.x + 7
+        feet_y = self.player.y + 21
 
         if self.map.is_deadly(col_left, col_right, feet_y):
             self.lives -= 1
@@ -221,9 +221,9 @@ class LevelComplete(Screen):
         self.points = self.world.game.level_points()
 
     def update(self):
-        if pyxel.btnp((pyxel.KEY_UP) or pyxel.btnp(pyxel.KEY_Z)):
+        if pyxel.btnp(pyxel.KEY_UP) or pyxel.btnp(pyxel.KEY_Z):
             self.choice = (self.choice - 1) % len(self.OPTIONS)
-        elif (pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btnp(pyxel.KEY_S)):
+        elif pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btnp(pyxel.KEY_S):
             self.choice = (self.choice + 1) % len(self.OPTIONS)
         elif pyxel.btnp(pyxel.KEY_RETURN):
             game = self.world.game
