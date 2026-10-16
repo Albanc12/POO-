@@ -1,0 +1,3 @@
+FPS = 30
+WIDTH = 512
+HEIGHT = 512
