@@ -20,6 +20,7 @@ class Map:
         self.spawn_x = 32
         self.spawn_y = 32
         self.rows = []
+        self.enemy_spawns = []
         self.pressed = False
 
         for y, row in enumerate(ascii_rows):
@@ -27,6 +28,11 @@ class Map:
                 self.spawn_x = row.index("S") * 16
                 self.spawn_y = (y + 1) * 16 - 21
                 row = row.replace("S", ".")
+
+            for x, tile in enumerate(row):
+                if tile == "E":
+                    self.enemy_spawns.append((x * 16, y * 16))
+            row = row.replace("E", ".")
 
             self.rows.append(row)
 

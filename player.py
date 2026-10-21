@@ -25,3 +25,20 @@ class Player:
             index = 0
         u, v = frames[index]
         pyxel.blt(self.x, self.y, 0, u, v, 16, 16, colkey=1, scale=2)
+
+
+class Enemy:
+    FRAMES = [(48, 96), (64, 96), (80, 96)]
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.direction = "right"
+
+    def touches(self, player):
+        return self.x <= player.x + 13 and player.x + 2 <= self.x + 15 and self.y <= player.y + 19 and player.y - 8 <= self.y + 15
+
+    def draw(self):
+        index = (pyxel.frame_count // 6) % len(self.FRAMES)
+        u, v = self.FRAMES[index]
+        pyxel.blt(self.x, self.y, 0, u, v, 16, 16, colkey=1, scale=2)

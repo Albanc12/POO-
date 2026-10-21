@@ -1,7 +1,7 @@
 import pyxel
 
 from levels import map1, map2, map3, map4
-from player import Player
+from player import Player, Enemy
 from settings import FPS
 from timer import Timer
 from ui import draw_big_text, draw_hearts
@@ -71,11 +71,20 @@ class Game(Screen):
         self.map = self.maps[level]
         self.map.pressed = False
         self.player = Player(self.map.spawn_x, self.map.spawn_y)
+        self.enemies = []
+        for x, y in self.map.enemy_spawns:
+            self.enemies.append(Enemy(x, y))
         self.level_start = self.timer.seconds
         self.timer.resume()
 
     def level_points(self):
         return max(0, 1000 - 10 * (self.timer.seconds - self.level_start))
+
+    def touches_enemy(self):
+        for enemy in self.enemies:
+            if enemy.touches(self.player):
+                return True
+        return False
 
     def update(self):
         self.player.moving = False
@@ -96,6 +105,22 @@ class Game(Screen):
             return
 
         self.timer.update()
+
+        for enemy in self.enemies:
+            if enemy.direction == "right":
+                col = (enemy.x + 16) // 16
+
+                if self.map.is_free(col, col, enemy.y, enemy.y + 15):
+                    enemy.x += 1
+                else:
+                    enemy.direction = "left"
+            else:
+                col = (enemy.x - 1) // 16
+
+                if self.map.is_free(col, col, enemy.y, enemy.y + 15):
+                    enemy.x -= 1
+                else:
+                    enemy.direction = "right"
 
         center_x = self.player.x + 7
         y_middle = self.player.y + 10
@@ -186,7 +211,7 @@ class Game(Screen):
         center_x = self.player.x + 7
         feet_y = self.player.y + 21
 
-        if self.map.is_deadly(col_left, col_right, feet_y):
+        if self.map.is_deadly(col_left, col_right, feet_y) or self.touches_enemy():
             self.lives -= 1
             if self.lives == 0:
                 self.world.screen = self.world.game_over
@@ -201,6 +226,8 @@ class Game(Screen):
 
     def draw(self):
         self.map.draw()
+        for enemy in self.enemies:
+            enemy.draw()
         self.player.draw()
 
         time_text = format_time(self.timer.seconds)
