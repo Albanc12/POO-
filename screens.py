@@ -1,5 +1,6 @@
 import pyxel
 
+from cover import Cover
 from levels import map1, map2, map3, map4
 from player import Player, Enemy
 from settings import FPS
@@ -19,33 +20,17 @@ class Screen:
 
 class Menu(Screen):
 
+    def __init__(self, world):
+        super().__init__(world)
+        self.cover = Cover()
+
     def update(self):
         if pyxel.btnp(pyxel.KEY_RETURN):
             self.world.game.new_game()
             self.world.screen = self.world.game
 
     def draw(self):
-        pyxel.cls(1)
-
-        frame_x, frame_y = 40, 180
-        frame_width, frame_height = 432, 150
-        pyxel.rectb(frame_x, frame_y, frame_width, frame_height, 7)
-        pyxel.rectb(frame_x + 2, frame_y + 2, frame_width - 4, frame_height - 4, 5)
-
-        center_x = frame_x + frame_width // 2
-        center_y = frame_y + frame_height // 2
-
-        title = "LADDER FIGHT"
-        title_x = center_x - len(title) * 4 // 2
-        title_y = center_y - 15
-        pyxel.text(title_x + 1, title_y + 1, title, 0)
-        pyxel.text(title_x, title_y, title, 10)
-
-        if pyxel.frame_count % 30 < 20:
-            subtitle = "Press ENTER to play"
-            subtitle_x = center_x - len(subtitle) * 4 // 2
-            subtitle_y = center_y + 15
-            pyxel.text(subtitle_x, subtitle_y, subtitle, 7)
+        self.cover.draw()
 
 
 class Game(Screen):
