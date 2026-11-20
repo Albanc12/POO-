@@ -1,15 +1,11 @@
 import pyxel
 
-from cover import Cover
+from cover import Cover, DeathCover, GameOverCover
 from levels import map1, map2, map3, map4
 from player import Player, Enemy
 from settings import FPS
 from timer import Timer
-from ui import draw_big_text, draw_hearts
-
-
-def format_time(seconds):
-    return str(seconds // 60) + ":" + str(seconds % 60).zfill(2)
+from ui import draw_big_text, draw_hearts, format_time
 
 
 class Screen:
@@ -286,6 +282,10 @@ class Pause(Screen):
 
 class Death(Screen):
 
+    def __init__(self, world):
+        super().__init__(world)
+        self.cover = DeathCover(world.game)
+
     def update(self):
         if pyxel.btnp(pyxel.KEY_RETURN):
             game = self.world.game
@@ -293,27 +293,21 @@ class Death(Screen):
             self.world.screen = game
 
     def draw(self):
-        pyxel.cls(0)
-        game = self.world.game
-        draw_big_text("You died", 256, 150, 8, 3)
-        draw_hearts(game.lives, game.max_lives, 256, 222)
-        draw_big_text("Time  " + format_time(game.timer.seconds), 256, 265, 7, 2)
-        draw_big_text("Score  " + str(game.score), 256, 300, 7, 2)
-
-        if pyxel.frame_count % 30 < 20:
-            draw_big_text("Press ENTER to try again", 256, 380, 7, 2)
+        self.cover.draw()
 
 
 class GameOver(Screen):
+
+    def __init__(self, world):
+        super().__init__(world)
+        self.cover = GameOverCover(world.game)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_RETURN):
             self.world.screen = self.world.menu
 
     def draw(self):
-        pyxel.cls(0)
-        draw_big_text("Game Over", 256, 200, 10, 3)
-        draw_big_text("Press ENTER to return to menu", 256, 300, 7, 2)
+        self.cover.draw()
 
 
 class Win(Screen):

@@ -1,6 +1,10 @@
 import pyxel
 
 
+def format_time(seconds):
+    return str(seconds // 60) + ":" + str(seconds % 60).zfill(2)
+
+
 def draw_big_text(text, center_x, center_y, color, scale):
     width = len(text) * 4
     img = pyxel.Image(width, 6)
